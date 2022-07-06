@@ -5,7 +5,6 @@ import styles from "../styles/Home.module.css";
 import { CheckBox } from "./CheckBox";
 import { useState } from "react";
 const CheckSearchName = () => {
-    const [search, setNewSearch] = useState("");
     const [searchResult, setSearchResult] = useState([]);
 
     const searchTask = [
@@ -116,12 +115,7 @@ const CheckSearchName = () => {
 	};
 
     
-    console.log(searchTask)
-    const filter = !search
-        ? searchTask
-        : searchTask.filter((person) =>
-            person.memberPru.nameTV.toLowerCase().includes(search.toLowerCase())
-        );
+   
     return (
         <div>
         <label className={styles.labelDev1}>Nhập tên task:</label>
