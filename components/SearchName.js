@@ -8,7 +8,7 @@ import { useState } from "react";
 
 
 
- const SearchName = ({fc}) => {
+const SearchName = ({ fc }) => {
     const [search, setNewSearch] = useState("");
     const handleSearchChanged = (e) => {
         setNewSearch(e.target.value);
@@ -76,8 +76,8 @@ import { useState } from "react";
             }
         });
     }
-    const dataUser = (user,e) =>{
-        fc(user,e.target.checked)
+    const dataUser = (user, e) => {
+        fc(user, e.target.checked)
     }
     return (
         <div className={styles.listName2_task}>
@@ -93,12 +93,12 @@ import { useState } from "react";
             <div className={styles.checkTask}>
                 <div className={styles.listName + " col-3"}>
                     <div className={styles.name}>
-                        {filtered.map((person,index) => {
+                        {filtered.map((person, index) => {
                             return (
                                 <div key={index}>
-			                        <input type="checkbox" onChange={(e)=> dataUser(person,e) } />
-			                        <label >{person.nameTV}</label>
-		                        </div>
+                                    <input type="checkbox" onChange={(e) => dataUser(person, e)} />
+                                    <label >{person.nameTV}</label>
+                                </div>
                             );
                         })}
                     </div>
