@@ -2,9 +2,10 @@ import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
 import { CheckBox } from "../components/CheckBox";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CheckSearchName from "../components/CheckSearchName"
 import SearchName from "../components/SearchName"
+import axios from "axios";
 
 export default function Home() {
 	const [searchResult, setSearchResult] = useState([]);
@@ -107,22 +108,30 @@ export default function Home() {
 			return setSearchResult([])
 		}
 		let valueData = []
-		const data = searchTask.filter(e => {
-			return e.nameTask.includes(event.target.value)
+		const data = searchResult.filter(e => {
+			return e.Name.includes(event.target.value)
 		})
 		for (let value in data) {
-			valueData = valueData.concat(data[value].memberPru)
+			valueData = valueData.concat(data[value].Name)
 		}
 		setSearchResult(valueData)
 	};
-	const filterData = (data,e) =>{
-		if(e){
-			return setSearchResult([...searchResult,data])
+	const filterData = (data, e) => {
+		if (e) {
+			return setSearchResult([...searchResult, data])
 		}
-		else{
-			const newData = searchResult.filter(e => e.nameTV !== e.nameTV)
+		else {
+			const newData = setSearchResult.filter(e => e.Name !== e.Name)
 			setSearchResult(newData)
 		}
+	}
+	useEffect(() =>{
+		getData()
+	},[])
+	const getData = () =>{
+		axios.get('http://mbi.miracles.vn/api/UserAPI/GetListUserWorkProject/?projectID=12278').then(response => {
+			setSearchResult(response.data)
+		});
 	}
 
 	return (
@@ -141,27 +150,25 @@ export default function Home() {
 							<input
 								className={styles.search_input}
 								onChange={(e) => handleSearchChange(e)}
-								placeholder="Task tuần từ {start_week_date} - {end_week_date} dự án {project_name} cho {ten-d}"
+								placeholder="Search.."
 							/>
 						</div>
 						<div className={styles.listName_task}>
 							<label className={styles.labelDev2}>Dev đã chọn:</label>
 							<div className={styles.checkTask}>
 								<div className={styles.search_text}>
-									<label className={styles.listName + " col-4"}>
-										<div>
+									<div className={styles.listName}>
 											{searchResult.map((person, index) => {
 												return (
-													<CheckBox key={index} name={person.nameTV} check="true" />
+													<CheckBox key={index} name={person.Name} check="true" />
 												);
 											})}
-										</div>
-									</label>
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
-					<SearchName fc = {filterData} />
+					<SearchName fc={filterData} />
 				</div>
 				<button className={styles.button}>Tạo task</button>
 			</main>

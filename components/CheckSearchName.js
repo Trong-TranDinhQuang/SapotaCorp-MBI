@@ -113,9 +113,6 @@ const CheckSearchName = () => {
         }
         setSearchResult(valueData)
 	};
-
-    
-   
     return (
         <div>
         <label className={styles.labelDev1}>Nhập tên task:</label>

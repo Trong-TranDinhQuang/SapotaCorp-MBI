@@ -220,3 +220,7 @@
   padding-top: 10px; */
   /* color: #8D8D8D; */
 }
+.lists{
+  display: grid;
+  grid-template-columns: repeat(5 , 1fr);
+}
