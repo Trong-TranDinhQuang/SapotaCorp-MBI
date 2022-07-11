@@ -3,119 +3,49 @@ import Image from "next/image";
 import styles from "../styles/Home.module.css";
 import { CheckBox } from "../components/CheckBox";
 import { useEffect, useState } from "react";
-import CheckSearchName from "../components/CheckSearchName"
 import SearchName from "../components/SearchName"
 import axios from "axios";
 
-export default function Home() {
+export default function Home({ lc }) {
+
 	const [searchResult, setSearchResult] = useState([]);
-
-	const searchTask = [
-		{
-			id: 1,
-			nameTask: "LastMonth",
-			memberPru: [
-				{
-					id: 1,
-					nameTV: "Trần Trọng Tín",
-				},
-				{
-					id: 1,
-					nameTV: "Trần Văn Thiện",
-				},
-				{
-					id: 1,
-					nameTV: "Phan Gia Vũ",
-				},
-				{
-					id: 1,
-					nameTV: "Lê Văn Phóng",
-				},
-				{
-					id: 1,
-					nameTV: "Nguyễn Văn Quỳnh",
-				},
-				{
-					id: 1,
-					nameTV: "Huỳnh Bá Thắng",
-				},
-			],
-		},
-		{
-			id: 1,
-			nameTask: "Tank",
-			memberPru: [
-				{
-					id: 1,
-					nameTV: "Trần Thanh Tâm",
-				},
-				{
-					id: 1,
-					nameTV: "Đỗ Phi Long Duy",
-				},
-				{
-					id: 1,
-					nameTV: "Nguyễn Thế Văn",
-				},
-				{
-					id: 1,
-					nameTV: "Trần Đình Trọng",
-				},
-				{
-					id: 1,
-					nameTV: "Phạm Ngũ Lão",
-				},
-				{
-					id: 1,
-					nameTV: "Vũ Văn Hiếu  ",
-				},
-			],
-		},
-		{
-			id: 1,
-			nameTask: "Prudential",
-			memberPru: [
-				{
-					id: 1,
-					nameTV: "Trần Thanh Danh",
-				},
-				{
-					id: 1,
-					nameTV: "Đỗ Phi Long",
-				},
-				{
-					id: 1,
-					nameTV: "Nguyễn Thành Sang",
-				},
-				{
-					id: 1,
-					nameTV: "Lê Quang Đạo",
-				},
-				{
-					id: 1,
-					nameTV: "Nguyễn Đình Tứ",
-				},
-				{
-					id: 1,
-					nameTV: "Trần Đình Quang Trong",
-				},
-			],
-		},
-
-	];
-	const handleSearchChange = (event) => {
-		if (event.target.value === '') {
-			return setSearchResult([])
+	function researchFunction(event) {
+		if (event === '') {
+			getData()
 		}
-		let valueData = []
-		const data = searchResult.filter(e => {
-			return e.Name.includes(event.target.value)
+		const data = searchResult.filter((e) => {
+			if (e.Name.search(event) !== -1) {
+				return e
+			}
 		})
-		for (let value in data) {
-			valueData = valueData.concat(data[value].Name)
-		}
-		setSearchResult(valueData)
-	};
+		setSearchResult(data)
+	}
+	useEffect(() => {
+		getData()
+	}, [])
+	const getData = () => {
+		axios.get('http://mbi.miracles.vn/api/UserAPI/GetListUserWorkProject/?projectID=10807').then(response => {
+			setSearchResult(response.data)
+		});
+	}
+
+	const dataUser = (user, e) => {
+		fc(user, e.target.checked)
+	}
+
+	// const handleSearchChange = (event) => {
+	// 	if (event.target.value === '') {
+	// 		return setSearchResult([])
+	// 	}
+	// 	let valueData = []
+	// 	const data = searchResult.filter(e => {
+	// 		return e.Name.includes(event.target.value)
+	// 	})
+	// 	for (let value in data) {
+	// 		valueData = valueData.concat(data[value].Name)
+	// 	}
+	// 	setSearchResult(valueData)
+	// };
 	const filterData = (data, e) => {
 		if (e) {
 			return setSearchResult([...searchResult, data])
@@ -125,13 +55,16 @@ export default function Home() {
 			setSearchResult(newData)
 		}
 	}
-	useEffect(() =>{
+	useEffect(() => {
 		getData()
-	},[])
-	const getData = () =>{
-		axios.get('http://mbi.miracles.vn/api/UserAPI/GetListUserWorkProject/?projectID=12278').then(response => {
-			setSearchResult(response.data)
-		});
+	}, [])
+
+	const fetchRandomData = () => {
+		axios.post('http://mbi.miracles.vn/api/TaskAPI/CreateTask').then(
+			(response) => {
+				setItems(response.data)
+			}
+		);
 	}
 
 	return (
@@ -149,8 +82,10 @@ export default function Home() {
 						<div className={styles.search_text}>
 							<input
 								className={styles.search_input}
-								onChange={(e) => handleSearchChange(e)}
+								onChange={(e) => researchFunction(e.target.value)}
 								placeholder="Search.."
+								id="myInput"
+								type="text"
 							/>
 						</div>
 						<div className={styles.listName_task}>
@@ -158,11 +93,17 @@ export default function Home() {
 							<div className={styles.checkTask}>
 								<div className={styles.search_text}>
 									<div className={styles.listName}>
+										<div className={styles.lists}>
 											{searchResult.map((person, index) => {
 												return (
-													<CheckBox key={index} name={person.Name} check="true" />
+													<div key={index}>
+														<input type="checkbox" onChange={(e) => dataUser(person, e)} />
+														<label className={styles.nameCheck} >{person.Name}</label>
+													</div>
 												);
 											})}
+										</div>
+
 									</div>
 								</div>
 							</div>
@@ -170,7 +111,10 @@ export default function Home() {
 					</div>
 					<SearchName fc={filterData} />
 				</div>
-				<button className={styles.button}>Tạo task</button>
+				<div>
+					<button onClick={fetchRandomData} className={styles.button} >Tạo task</button>
+				</div>
+
 			</main>
 
 			<footer className={styles.footer}></footer>
